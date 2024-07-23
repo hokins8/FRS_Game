@@ -25,7 +25,6 @@ public enum BlockType
 
 public class Block : MonoBehaviour
 {
-    private Material blockMaterial;
     private BlockType blockType;
     private Chunk chunkParent;
     private Vector3 position;
@@ -43,9 +42,8 @@ public class Block : MonoBehaviour
                 new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
          };
 
-    public Block(Material material, BlockType type, Vector3 pos, Chunk chunk)
+    public Block(BlockType type, Vector3 pos, Chunk chunk)
     {
-        blockMaterial = material;
         blockType = type;
         position = pos;
         chunkParent = chunk;
@@ -129,7 +127,7 @@ public class Block : MonoBehaviour
 
         GameObject quad = new GameObject("Quad");
         quad.transform.position = position;
-        quad.transform.parent = chunkParent.gameObject.transform;
+        quad.transform.parent = chunkParent.SpawnedChunk.transform;
 
         MeshFilter meshFilter = quad.AddComponent<MeshFilter>();
         meshFilter.mesh = mesh;

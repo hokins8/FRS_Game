@@ -1,10 +1,9 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class Chunk : MonoBehaviour
+public class Chunk
 {
-    public Material chunkMaterial; // WIP
+    public Material ChunkMaterial;
+    public GameObject SpawnedChunk;
 
     private Block[,,] chunkData;
 
@@ -13,44 +12,55 @@ public class Chunk : MonoBehaviour
         return chunkData;
     }
 
-    IEnumerator buildChunk(int sizeX, int sizeY, int sizeZ)
+    private void BuildChunk()
     {
-        chunkData = new Block[sizeX, sizeY, sizeZ];
+        int worldSize = World.Instance.ChunkSize;
+        chunkData = new Block[worldSize, worldSize, worldSize];
 
-        for (int z = 0; z < sizeZ; z++)
+        for (int z = 0; z < worldSize; z++)
         {
-            for (int y = 0; y < sizeY; y++)
+            for (int y = 0; y < worldSize; y++)
             {
-                for (int x = 0; x < sizeX; x++)
+                for (int x = 0; x < worldSize; x++)
                 {
                     Vector3 pos = new Vector3(x, y, z);
                     float rnd = Random.value;
                     if (rnd >= 0.65f)
                     {
-                        var grassBlock = BlockCollection.Instance.GetBlock(BlockType.Rock);
-                        if (grassBlock != null)
-                            chunkData[x, y, z] = new Block(grassBlock.GetMaterial(), BlockType.Grass, pos, this);
+                        chunkData[x, y, z] = new Block(BlockType.Grass, pos, this);
                     }
                     else
                     {
-                        chunkData[x, y, z] = new Block(null, BlockType.None, pos, this);
+                        chunkData[x, y, z] = new Block(BlockType.None, pos, this);
                     }
                 }
             }
         }
+    }
 
-        for (int z = 0; z < sizeZ; z++)
-            for (int y = 0; y < sizeY; y++)
-                for (int x = 0; x < sizeX; x++)
+    public Chunk(Vector3 pos, Material material)
+    {
+        SpawnedChunk = new GameObject("Chunk");
+        SpawnedChunk.transform.position = pos;
+        ChunkMaterial = material;
+        BuildChunk();
+    }
+
+    public void DrawChunk()
+    {
+        int worldSize = World.Instance.ChunkSize;
+
+        for (int z = 0; z < worldSize; z++)
+            for (int y = 0; y < worldSize; y++)
+                for (int x = 0; x < worldSize; x++)
                     chunkData[x, y, z].Draw();
 
         CombineQuads();
-        yield return null;
     }
 
     private void CombineQuads()
     {
-        MeshFilter[] meshFilters = GetComponentsInChildren<MeshFilter>();
+        MeshFilter[] meshFilters = SpawnedChunk.GetComponentsInChildren<MeshFilter>();
         CombineInstance[] combine = new CombineInstance[meshFilters.Length];
 
         int i = 0;
@@ -61,25 +71,15 @@ public class Chunk : MonoBehaviour
             i++;
         }
 
-        MeshFilter mf = (MeshFilter)gameObject.AddComponent(typeof(MeshFilter));
+        MeshFilter mf = (MeshFilter)SpawnedChunk.AddComponent(typeof(MeshFilter));
         mf.mesh = new Mesh();
+
         mf.mesh.CombineMeshes(combine);
 
-        MeshRenderer meshRenderer = gameObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        meshRenderer.material = chunkMaterial;
+        MeshRenderer meshRenderer = SpawnedChunk.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+        meshRenderer.material = ChunkMaterial;
 
-        foreach (Transform quad in transform)
-            Destroy(quad.gameObject);
-    }
-
-
-    private void Start()
-    {
-        Invoke(nameof(BuildTestChunk), 1.5f);
-    }
-
-    private void BuildTestChunk()
-    {
-        StartCoroutine(buildChunk(10, 10, 10));
+        foreach (Transform quad in SpawnedChunk.transform)
+            GameObject.Destroy(quad.gameObject);
     }
 }
