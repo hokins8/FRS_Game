@@ -150,6 +150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WorldHeight: 5
   ChunkSize: 10
+  WorldSize: 2
 --- !u!4 &23062968
 Transform:
   m_ObjectHideFlags: 0

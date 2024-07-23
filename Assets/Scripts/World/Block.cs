@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public enum BlockSide
 {
@@ -133,9 +134,41 @@ public class Block : MonoBehaviour
         meshFilter.mesh = mesh;
     }
 
+    private int ConvertBlockIndexToLocal(int i, int chunkSize)
+    {
+        if (i == -1)
+            i = chunkSize - 1;
+        else if (i == chunkSize)
+            i = 0;
+
+        return i;
+    }
+
     public bool HasNeighbour(int x, int y, int z)
     {
         Block[,,] chunks = chunkParent.GetChunkData();
+
+        var chunkSize = World.Instance.ChunkSize;
+        if (x < 0 || x >= chunkSize || y < 0 || y >= chunkSize || z < 0 || z >= chunkSize)
+        {
+            Vector3 neighbourChunksPos = chunkParent.SpawnedChunk.transform.position + new Vector3((x - (int)position.x) * chunkSize, (y - (int)position.y) * chunkSize, (z - (int)position.z) * chunkSize);
+            x = ConvertBlockIndexToLocal(x, chunkSize);
+            y = ConvertBlockIndexToLocal(y, chunkSize);
+            z = ConvertBlockIndexToLocal(z, chunkSize);
+
+            //if (World.Instance.AllChunks.TryGetValue()) // WIP
+            //{
+            //    chunks = chunkParent.GetChunkData();
+            //}
+            //else
+            //    return false;
+        }
+        else
+        {
+            chunks = chunkParent.GetChunkData();
+        }
+
+
         try
         {
             return chunks[x, y, z].haveNeighbor;

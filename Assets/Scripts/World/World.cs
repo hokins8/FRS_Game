@@ -6,7 +6,8 @@ public class World : MonoBehaviour
 {
     public int WorldHeight;
     public int ChunkSize;
-    public List<Chunk> AllChunks = new();
+    public int WorldSize;
+    public Dictionary<int, Chunk> AllChunks = new();
 
     private Material grassMat;
 
@@ -23,18 +24,25 @@ public class World : MonoBehaviour
         if (grassBlock != null)
             grassMat = grassBlock.GetMaterial();
 
-        for (int i = 0; i < WorldHeight; i++)
+        for (int z = 0; z < WorldSize; z++)
         {
-            Vector3 chunkPosition = new Vector3(transform.position.x, i * ChunkSize, transform.position.z);
+            for (int x = 0; x < WorldSize; x++)
+            {
+                for (int y = 0; y < WorldHeight; y++)
+                {
+                    Vector3 chunkPosition = new Vector3(x * ChunkSize, y * ChunkSize, z * ChunkSize);
 
-            Chunk chunk = new Chunk(chunkPosition, grassMat);
-            chunk.SpawnedChunk.transform.parent = this.transform;
-            AllChunks.Add(chunk);
+                    Chunk chunk = new Chunk(chunkPosition, grassMat);
+                    chunk.SpawnedChunk.transform.parent = this.transform;
+                    //AllChunks.Add(chunk); // WIP -> generate ID?
+                }
+            }
         }
+        
 
         foreach (var chunk in AllChunks)
         {
-            chunk.DrawChunk();
+            chunk.Value.DrawChunk();
             yield return null;
         }
     }
