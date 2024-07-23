@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -24,13 +25,14 @@ public enum BlockType
 
 public class Block : MonoBehaviour
 {
-    private Material cubeMat;
-    private BlockType bType;
+    private Material blockMaterial;
+    private BlockType blockType;
     private Chunk chunkParent;
     private Vector3 position;
     private bool haveNeighbor;
 
-    Vector2[,] blockUVs = {
+    Vector2[,] blockUVs = 
+        {
             {new Vector2( 0.125f, 0.375f ), new Vector2( 0.1875f, 0.375f),
                 new Vector2( 0.125f, 0.4375f ),new Vector2( 0.1875f, 0.4375f )},
             {new Vector2( 0.1875f, 0.9375f ), new Vector2( 0.25f, 0.9375f),
@@ -39,15 +41,15 @@ public class Block : MonoBehaviour
                 new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
             {new Vector2( 0, 0.875f ), new Vector2( 0.0625f, 0.875f),
                 new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
-                        };
+         };
 
     public Block(Material material, BlockType type, Vector3 pos, Chunk chunk)
     {
-        cubeMat = material;
-        bType = type;
+        blockMaterial = material;
+        blockType = type;
         position = pos;
         chunkParent = chunk;
-        haveNeighbor = true;
+        haveNeighbor = type != BlockType.None;
     }
 
     private void CreateQuad(BlockSide side)
@@ -57,8 +59,6 @@ public class Block : MonoBehaviour
 
         Vector3[] vertices = new Vector3[4];
         Vector3[] normals = new Vector3[4];
-        Vector2[] uvs = new Vector2[4];
-        int[] triangles = new int[6];
 
         Vector3 p0 = new Vector3(-0.5f, -0.5f, 0.5f);
         Vector3 p1 = new Vector3(0.5f, -0.5f, 0.5f);
@@ -74,7 +74,7 @@ public class Block : MonoBehaviour
         Vector2 uv01;
         Vector2 uv11;
 
-        if (bType == BlockType.Grass && side == BlockSide.Up)
+        if (blockType == BlockType.Grass && side == BlockSide.Up)
         {
             uv00 = blockUVs[0, 0];
             uv10 = blockUVs[0, 1];
@@ -83,71 +83,43 @@ public class Block : MonoBehaviour
         }
         else
         {
-            uv00 = blockUVs[(int)(bType + 1), 0];
-            uv10 = blockUVs[(int)(bType + 1), 1];
-            uv01 = blockUVs[(int)(bType + 1), 2];
-            uv11 = blockUVs[(int)(bType + 1), 3];
+            uv00 = blockUVs[(int)(blockType + 1), 0];
+            uv10 = blockUVs[(int)(blockType + 1), 1];
+            uv01 = blockUVs[(int)(blockType + 1), 2];
+            uv11 = blockUVs[(int)(blockType + 1), 3];
         }
-
-
 
         switch (side)
         {
             case BlockSide.Down:
                 vertices = new Vector3[] { p0, p1, p2, p3 };
-                normals = new Vector3[] {Vector3.down,
-                                 Vector3.down,
-                                 Vector3.down,
-                                 Vector3.down};
-                uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
-                triangles = new int[] { 3, 1, 0, 3, 2, 1 };
+                normals = new Vector3[] {Vector3.down, Vector3.down, Vector3.down, Vector3.down};
                 break;
             case BlockSide.Up:
                 vertices = new Vector3[] { p7, p6, p5, p4 };
-                normals = new Vector3[] {Vector3.up,
-                                 Vector3.up,
-                                 Vector3.up,
-                                 Vector3.up};
-                uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
-                triangles = new int[] { 3, 1, 0, 3, 2, 1 };
+                normals = new Vector3[] {Vector3.up, Vector3.up, Vector3.up, Vector3.up};
                 break;
             case BlockSide.Right:
                 vertices = new Vector3[] { p5, p6, p2, p1 };
-                normals = new Vector3[] {Vector3.right,
-                                 Vector3.right,
-                                 Vector3.right,
-                                 Vector3.right};
-                uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
-                triangles = new int[] { 3, 1, 0, 3, 2, 1 };
+                normals = new Vector3[] {Vector3.right, Vector3.right, Vector3.right, Vector3.right};
                 break;
             case BlockSide.Left:
                 vertices = new Vector3[] { p7, p4, p0, p3 };
-                normals = new Vector3[] {Vector3.left,
-                                 Vector3.left,
-                                 Vector3.left,
-                                 Vector3.left};
-                uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
-                triangles = new int[] { 3, 1, 0, 3, 2, 1 };
+                normals = new Vector3[] {Vector3.left, Vector3.left, Vector3.left, Vector3.left};
                 break;
             case BlockSide.Front:
                 vertices = new Vector3[] { p4, p5, p1, p0 };
-                normals = new Vector3[] {Vector3.forward,
-                                 Vector3.forward,
-                                 Vector3.forward,
-                                 Vector3.forward};
-                uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
-                triangles = new int[] { 3, 1, 0, 3, 2, 1 };
+                normals = new Vector3[] {Vector3.forward, Vector3.forward, Vector3.forward, Vector3.forward};
                 break;
             case BlockSide.Back:
                 vertices = new Vector3[] { p6, p7, p3, p2 };
-                normals = new Vector3[] {Vector3.back,
-                                 Vector3.back,
-                                 Vector3.back,
-                                 Vector3.back};
-                uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
-                triangles = new int[] { 3, 1, 0, 3, 2, 1 };
+                normals = new Vector3[] {Vector3.back, Vector3.back, Vector3.back, Vector3.back};
+                break;
+            default:
                 break;
         }
+        Vector2[] uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
+        int[] triangles = new int[] { 3, 1, 0, 3, 2, 1 };
         mesh.vertices = vertices;
         mesh.normals = normals;
         mesh.uv = uvs;
@@ -155,14 +127,12 @@ public class Block : MonoBehaviour
 
         mesh.RecalculateBounds();
 
-        GameObject quad = new GameObject("quad");
+        GameObject quad = new GameObject("Quad");
         quad.transform.position = position;
         quad.transform.parent = chunkParent.gameObject.transform;
 
-        MeshFilter meshFilter = (MeshFilter)quad.AddComponent(typeof(MeshFilter));
+        MeshFilter meshFilter = quad.AddComponent<MeshFilter>();
         meshFilter.mesh = mesh;
-        MeshRenderer meshRenderer = quad.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        meshRenderer.material = cubeMat;
     }
 
     public bool HasNeighbour(int x, int y, int z)
@@ -181,6 +151,9 @@ public class Block : MonoBehaviour
 
     public void Draw()
     {
+        if (blockType == BlockType.None)
+            return;
+
         TryDraw(BlockSide.Front, (int)position.x, (int)position.y, (int)position.z + 1);
         TryDraw(BlockSide.Back, (int)position.x, (int)position.y, (int)position.z - 1);
         TryDraw(BlockSide.Down, (int)position.x, (int)position.y - 1, (int)position.z);

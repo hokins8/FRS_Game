@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    public Material cube_Material;
+    public Material chunkMaterial; // WIP
 
     private Block[,,] chunkData;
 
@@ -15,7 +15,6 @@ public class Chunk : MonoBehaviour
 
     IEnumerator buildChunk(int sizeX, int sizeY, int sizeZ)
     {
-
         chunkData = new Block[sizeX, sizeY, sizeZ];
 
         for (int z = 0; z < sizeZ; z++)
@@ -25,12 +24,16 @@ public class Chunk : MonoBehaviour
                 for (int x = 0; x < sizeX; x++)
                 {
                     Vector3 pos = new Vector3(x, y, z);
-                    var grassBlock = BlockCollection.Instance.GetBlock(BlockType.Grass);
-                    if (grassBlock != null)
+                    float rnd = Random.value;
+                    if (rnd >= 0.65f)
                     {
-                        chunkData[x,y,z] = new Block(grassBlock.GetMaterial(), BlockType.Grass, pos, this);
-                        //chunkData[x, y, z].Draw();
-                        //yield return null;
+                        var grassBlock = BlockCollection.Instance.GetBlock(BlockType.Rock);
+                        if (grassBlock != null)
+                            chunkData[x, y, z] = new Block(grassBlock.GetMaterial(), BlockType.Grass, pos, this);
+                    }
+                    else
+                    {
+                        chunkData[x, y, z] = new Block(null, BlockType.None, pos, this);
                     }
                 }
             }
@@ -39,11 +42,10 @@ public class Chunk : MonoBehaviour
         for (int z = 0; z < sizeZ; z++)
             for (int y = 0; y < sizeY; y++)
                 for (int x = 0; x < sizeX; x++)
-                {
                     chunkData[x, y, z].Draw();
-                    yield return null;
-                }
+
         CombineQuads();
+        yield return null;
     }
 
     private void CombineQuads()
@@ -64,8 +66,7 @@ public class Chunk : MonoBehaviour
         mf.mesh.CombineMeshes(combine);
 
         MeshRenderer meshRenderer = gameObject.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
-        meshRenderer.material = cube_Material;
-
+        meshRenderer.material = chunkMaterial;
 
         foreach (Transform quad in transform)
             Destroy(quad.gameObject);
@@ -74,11 +75,11 @@ public class Chunk : MonoBehaviour
 
     private void Start()
     {
-        Invoke(nameof(BuildTestChunk), 3);
+        Invoke(nameof(BuildTestChunk), 1.5f);
     }
 
     private void BuildTestChunk()
     {
-        StartCoroutine(buildChunk(6, 6, 6));
+        StartCoroutine(buildChunk(10, 10, 10));
     }
 }
