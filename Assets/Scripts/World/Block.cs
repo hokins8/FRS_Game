@@ -26,8 +26,9 @@ public class Block : MonoBehaviour
 {
     private Material cubeMat;
     private BlockType bType;
-    private GameObject parent;
+    private Chunk chunkParent;
     private Vector3 position;
+    private bool haveNeighbor;
 
     Vector2[,] blockUVs = {
             {new Vector2( 0.125f, 0.375f ), new Vector2( 0.1875f, 0.375f),
@@ -40,15 +41,14 @@ public class Block : MonoBehaviour
                 new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
                         };
 
-    public Block(Material m, BlockType b, Vector3 pos, GameObject p)
+    public Block(Material material, BlockType type, Vector3 pos, Chunk chunk)
     {
-        cubeMat = m;
-        bType = b;
+        cubeMat = material;
+        bType = type;
         position = pos;
-        parent = p;
+        chunkParent = chunk;
+        haveNeighbor = true;
     }
-
-
 
     private void CreateQuad(BlockSide side)
     {
@@ -157,7 +157,7 @@ public class Block : MonoBehaviour
 
         GameObject quad = new GameObject("quad");
         quad.transform.position = position;
-        quad.transform.parent = parent.transform;
+        quad.transform.parent = chunkParent.gameObject.transform;
 
         MeshFilter meshFilter = (MeshFilter)quad.AddComponent(typeof(MeshFilter));
         meshFilter.mesh = mesh;
@@ -165,14 +165,33 @@ public class Block : MonoBehaviour
         meshRenderer.material = cubeMat;
     }
 
+    public bool HasNeighbour(int x, int y, int z)
+    {
+        Block[,,] chunks = chunkParent.GetChunkData();
+        try
+        {
+            return chunks[x, y, z].haveNeighbor;
+        }
+        catch (System.Exception) 
+        {
+            return false;
+        }
+    }
+
 
     public void Draw()
     {
-        CreateQuad(BlockSide.Front);
-        CreateQuad(BlockSide.Back);
-        CreateQuad(BlockSide.Down);
-        CreateQuad(BlockSide.Up);
-        CreateQuad(BlockSide.Right);
-        CreateQuad(BlockSide.Left);
+        TryDraw(BlockSide.Front, (int)position.x, (int)position.y, (int)position.z + 1);
+        TryDraw(BlockSide.Back, (int)position.x, (int)position.y, (int)position.z - 1);
+        TryDraw(BlockSide.Down, (int)position.x, (int)position.y - 1, (int)position.z);
+        TryDraw(BlockSide.Up, (int)position.x, (int)position.y + 1, (int)position.z);
+        TryDraw(BlockSide.Right, (int)position.x + 1, (int)position.y, (int)position.z);
+        TryDraw(BlockSide.Left, (int)position.x - 1, (int)position.y, (int)position.z);
+    }
+
+    private void TryDraw(BlockSide side, int x, int y, int z)
+    {
+        if (!HasNeighbour(x, y, z))
+            CreateQuad(side);
     }
 }
