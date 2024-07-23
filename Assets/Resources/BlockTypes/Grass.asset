@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92a793199571ee64aba1fe350c7d59c0, type: 3}
   m_Name: Grass
   m_EditorClassIdentifier: 
-  blockType: 0
+  blockType: 2
   blockMaterial: {fileID: 2100000, guid: a71f45e346c9af24b95c3cb6480abe52, type: 2}
   hardeness: 3
   posY: 0

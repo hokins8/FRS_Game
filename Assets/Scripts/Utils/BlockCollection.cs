@@ -25,4 +25,14 @@ public class BlockCollection : MonoBehaviour
                 Debug.LogError("Null Material");
         }
     }
+
+    public BlockScriptObj GetBlock(BlockType type)
+    {
+        foreach (var block in BlockScriptObjs)
+            if (type == block.GetBlockType())
+                return block;
+
+        Debug.LogError("Null BlockScriptObj for blockType = "+ type);
+        return null;
+    }
 }
