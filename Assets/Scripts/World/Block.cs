@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEngine.UI.GridLayoutGroup;
 
 public enum BlockSide
 {
@@ -134,19 +131,19 @@ public class Block : MonoBehaviour
         meshFilter.mesh = mesh;
     }
 
-    private int ConvertBlockIndexToLocal(int i, int chunkSize)
+    private int ConvertBlockIndexToLocal(int pos, int chunkSize)
     {
-        if (i == -1)
-            i = chunkSize - 1;
-        else if (i == chunkSize)
-            i = 0;
+        if (pos == -1)
+            pos = chunkSize - 1;
+        else if (pos == chunkSize)
+            pos = 0;
 
-        return i;
+        return pos;
     }
 
     public bool HasNeighbour(int x, int y, int z)
     {
-        Block[,,] chunks = chunkParent.GetChunkData();
+        Block[,,] chunks;
 
         var chunkSize = World.Instance.ChunkSize;
         if (x < 0 || x >= chunkSize || y < 0 || y >= chunkSize || z < 0 || z >= chunkSize)
@@ -156,12 +153,13 @@ public class Block : MonoBehaviour
             y = ConvertBlockIndexToLocal(y, chunkSize);
             z = ConvertBlockIndexToLocal(z, chunkSize);
 
-            //if (World.Instance.AllChunks.TryGetValue()) // WIP
-            //{
-            //    chunks = chunkParent.GetChunkData();
-            //}
-            //else
-            //    return false;
+            string chunkName = World.Instance.SetChunkNameByPos(neighbourChunksPos);
+
+            Chunk nextChunk;
+            if (World.Instance.AllChunks.TryGetValue(chunkName, out nextChunk))
+                chunks = nextChunk.GetChunkData();
+            else
+                return false;
         }
         else
         {

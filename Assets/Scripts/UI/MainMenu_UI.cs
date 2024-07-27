@@ -17,6 +17,7 @@ public class MainMenu_UI : MonoBehaviour
         Addressables.LoadSceneAsync("GameScene", LoadSceneMode.Additive);
         ShowAllPanels(false);
         mainMenuCamera.gameObject.SetActive(false);
+        // WIP -> ADD Loading
     }
 
     // WIP -> Load & Save

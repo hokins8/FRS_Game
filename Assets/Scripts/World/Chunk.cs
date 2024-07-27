@@ -24,15 +24,20 @@ public class Chunk
                 for (int x = 0; x < worldSize; x++)
                 {
                     Vector3 pos = new Vector3(x, y, z);
-                    float rnd = Random.value;
-                    if (rnd >= 0.65f)
-                    {
+
+                    int wX = (int)(x + SpawnedChunk.transform.position.x);
+                    int wY = (int)(y + SpawnedChunk.transform.position.y);
+                    int wZ = (int)(z + SpawnedChunk.transform.position.z);
+
+                    if (wY <= PerlinNoise.Instance.GenerateHeight(wX, wZ))
                         chunkData[x, y, z] = new Block(BlockType.Grass, pos, this);
-                    }
                     else
-                    {
                         chunkData[x, y, z] = new Block(BlockType.None, pos, this);
-                    }
+                    //float rnd = Random.value;
+                    //if (rnd >= 0.65f)
+                    //    chunkData[x, y, z] = new Block(BlockType.Grass, pos, this);
+                    //else
+                    //    chunkData[x, y, z] = new Block(BlockType.None, pos, this);
                 }
             }
         }
@@ -40,7 +45,7 @@ public class Chunk
 
     public Chunk(Vector3 pos, Material material)
     {
-        SpawnedChunk = new GameObject("Chunk");
+        SpawnedChunk = new GameObject(World.Instance.SetChunkNameByPos(pos));
         SpawnedChunk.transform.position = pos;
         ChunkMaterial = material;
         BuildChunk();

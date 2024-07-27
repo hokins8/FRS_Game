@@ -7,7 +7,7 @@ public class World : MonoBehaviour
     public int WorldHeight;
     public int ChunkSize;
     public int WorldSize;
-    public Dictionary<int, Chunk> AllChunks = new();
+    public Dictionary<string, Chunk> AllChunks = new();
 
     private Material grassMat;
 
@@ -16,6 +16,16 @@ public class World : MonoBehaviour
     void Awake()
     {
         Instance = this;
+    }
+
+    void Start()
+    {
+        StartCoroutine(BuildWorldHeight());
+    }
+
+    public string SetChunkNameByPos(Vector3 pos)
+    {
+        return pos.x + "_" + pos.y + "_" + pos.z;
     }
 
     IEnumerator BuildWorldHeight()
@@ -31,10 +41,10 @@ public class World : MonoBehaviour
                 for (int y = 0; y < WorldHeight; y++)
                 {
                     Vector3 chunkPosition = new Vector3(x * ChunkSize, y * ChunkSize, z * ChunkSize);
-
+                    string chunkName = SetChunkNameByPos(chunkPosition);
                     Chunk chunk = new Chunk(chunkPosition, grassMat);
                     chunk.SpawnedChunk.transform.parent = this.transform;
-                    //AllChunks.Add(chunk); // WIP -> generate ID?
+                    AllChunks.Add(chunkName, chunk);
                 }
             }
         }
@@ -45,10 +55,5 @@ public class World : MonoBehaviour
             chunk.Value.DrawChunk();
             yield return null;
         }
-    }
-
-    void Start()
-    {
-        StartCoroutine(BuildWorldHeight());
     }
 }
