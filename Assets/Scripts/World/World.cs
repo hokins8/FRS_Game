@@ -42,13 +42,12 @@ public class World : MonoBehaviour
                 {
                     Vector3 chunkPosition = new Vector3(x * ChunkSize, y * ChunkSize, z * ChunkSize);
                     string chunkName = SetChunkNameByPos(chunkPosition);
-                    Chunk chunk = new Chunk(chunkPosition, grassMat);
+                    Chunk chunk = new Chunk(chunkPosition, grassMat); // WIP -> Material
                     chunk.SpawnedChunk.transform.parent = this.transform;
                     AllChunks.Add(chunkName, chunk);
                 }
             }
         }
-        
 
         foreach (var chunk in AllChunks)
         {
