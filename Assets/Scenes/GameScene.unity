@@ -148,6 +148,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4248331f46236824c9add191fa280275, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  matAtlas: {fileID: 2100000, guid: c228d08a9dd21764088a27b26a1efd8c, type: 2}
   WorldHeight: 16
   ChunkSize: 16
   WorldSize: 2

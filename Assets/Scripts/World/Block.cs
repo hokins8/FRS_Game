@@ -38,7 +38,7 @@ public class Block : MonoBehaviour
                 new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
             {new Vector2( 0, 0.875f ), new Vector2( 0.0625f, 0.875f),
                 new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
-         };
+         }; // WIP better pos
 
     public Block(BlockType type, Vector3 pos, Chunk chunk)
     {
@@ -65,24 +65,24 @@ public class Block : MonoBehaviour
         Vector3 p6 = new Vector3(0.5f, 0.5f, -0.5f);
         Vector3 p7 = new Vector3(-0.5f, 0.5f, -0.5f);
 
-        Vector2 uv00;
-        Vector2 uv10;
-        Vector2 uv01;
-        Vector2 uv11;
+        Vector2 uv = blockUVs[0, 0];
 
-        if (blockType == BlockType.Grass && side == BlockSide.Up)
+
+        switch (blockType)
         {
-            uv00 = blockUVs[0, 0];
-            uv10 = blockUVs[0, 1];
-            uv01 = blockUVs[0, 2];
-            uv11 = blockUVs[0, 3];
-        }
-        else
-        {
-            uv00 = blockUVs[(int)(blockType + 1), 0];
-            uv10 = blockUVs[(int)(blockType + 1), 1];
-            uv01 = blockUVs[(int)(blockType + 1), 2];
-            uv11 = blockUVs[(int)(blockType + 1), 3];
+            case BlockType.None:
+                break;
+            case BlockType.Rock:
+                uv = blockUVs[1, 1]; // WIP better pos
+                break;
+            case BlockType.Grass:
+                uv = blockUVs[0, 0]; // WIP better pos
+                break;
+            case BlockType.Snow:
+                uv = blockUVs[2, 2]; // WIP better pos
+                break;
+            default:
+                break;
         }
 
         switch (side)
@@ -114,7 +114,7 @@ public class Block : MonoBehaviour
             default:
                 break;
         }
-        Vector2[] uvs = new Vector2[] { uv11, uv01, uv00, uv10 };
+        Vector2[] uvs = new Vector2[] { uv, uv, uv, uv };
         int[] triangles = new int[] { 3, 1, 0, 3, 2, 1 };
         mesh.vertices = vertices;
         mesh.normals = normals;

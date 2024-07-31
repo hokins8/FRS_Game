@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
+    [SerializeField] Material matAtlas;
     public int WorldHeight;
     public int ChunkSize;
     public int WorldSize;
@@ -42,7 +43,7 @@ public class World : MonoBehaviour
                 {
                     Vector3 chunkPosition = new Vector3(x * ChunkSize, y * ChunkSize, z * ChunkSize);
                     string chunkName = SetChunkNameByPos(chunkPosition);
-                    Chunk chunk = new Chunk(chunkPosition, grassMat); // WIP -> Material
+                    Chunk chunk = new Chunk(chunkPosition, matAtlas);
                     chunk.SpawnedChunk.transform.parent = this.transform;
                     AllChunks.Add(chunkName, chunk);
                 }
