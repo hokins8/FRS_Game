@@ -20,10 +20,23 @@ public class PerlinNoise : MonoBehaviour
         return height;
     }
 
-    public int GenerateHeight(float x, float z)
+    public int GenerateGrassHeight(float x, float z)
     {
         int height = (int) Map(0, maxHeight, 0, 1, MathMagic(x * smooth, z * smooth, octaves, persistence));
         return height;
+    }
+
+    public float GenerateCaves(float x,float y, float z, float smooth, int octaves)
+    {
+        var xy = MathMagic(x * smooth, y * smooth, octaves, persistence);
+        var yz = MathMagic(y * smooth, z * smooth, octaves, persistence);
+        var xz = MathMagic(x * smooth, z * smooth, octaves, persistence);
+        var yx = MathMagic(y * smooth, x * smooth, octaves, persistence);
+        var zy = MathMagic(z * smooth, y * smooth, octaves, persistence);
+        var zx = MathMagic(z * smooth, x * smooth, octaves, persistence);
+
+        float value = (xy + yz + xz + yx + zy + zx) / 6;
+        return value;
     }
 
     private float Map(float newmin, float newmax, float originmin, float originmax, float value)

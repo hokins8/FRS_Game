@@ -29,14 +29,12 @@ public class Chunk
                     int wY = (int)(y + SpawnedChunk.transform.position.y);
                     int wZ = (int)(z + SpawnedChunk.transform.position.z);
 
-                    if (wY <= PerlinNoise.Instance.GenerateRockHeight(wX, wZ))
-                    {
+                    if (PerlinNoise.Instance.GenerateCaves(wX,wY, wZ, 0.1f, 3) < 0.44f)
+                        chunkData[x, y, z] = new Block(BlockType.None, pos, this);
+                    else if (wY <= PerlinNoise.Instance.GenerateRockHeight(wX, wZ))
                         chunkData[x, y, z] = new Block(BlockType.Rock, pos, this);
-                    }
-                    else if (wY <= PerlinNoise.Instance.GenerateHeight(wX, wZ))
-                    {
+                    else if (wY <= PerlinNoise.Instance.GenerateGrassHeight(wX, wZ))
                         chunkData[x, y, z] = new Block(BlockType.Grass, pos, this);
-                    }
                     else
                         chunkData[x, y, z] = new Block(BlockType.None, pos, this);
                 }
