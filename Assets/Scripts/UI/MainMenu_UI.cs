@@ -1,6 +1,9 @@
+using UnityEditor.Sprites;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
+using UnityEngine.U2D;
+using static UnityEditor.Progress;
 
 public class MainMenu_UI : MonoBehaviour
 {

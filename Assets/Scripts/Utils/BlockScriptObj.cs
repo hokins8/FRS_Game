@@ -4,9 +4,8 @@ using UnityEngine;
 public class BlockScriptObj : ScriptableObject
 {
     [SerializeField] BlockType blockType;
-    [SerializeField] Material blockMaterial;
+    [SerializeField] Material blockMaterial; // old
     [SerializeField] float hardeness;
-    [SerializeField] int posY;
 
     public BlockType GetBlockType()
     {
@@ -21,10 +20,5 @@ public class BlockScriptObj : ScriptableObject
     public float GetHardeness()
     {
         return hardeness;
-    }
-
-    public int GetPosY()
-    {
-        return posY;
     }
 }

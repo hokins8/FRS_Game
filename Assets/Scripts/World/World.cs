@@ -10,8 +10,6 @@ public class World : MonoBehaviour
     public int WorldSize;
     public Dictionary<string, Chunk> AllChunks = new();
 
-    private Material grassMat;
-
     public static World Instance;
 
     void Awake()
@@ -31,10 +29,6 @@ public class World : MonoBehaviour
 
     IEnumerator BuildWorldHeight()
     {
-        var grassBlock = BlockCollection.Instance.GetBlock(BlockType.Grass);
-        if (grassBlock != null)
-            grassMat = grassBlock.GetMaterial();
-
         for (int z = 0; z < WorldSize; z++)
         {
             for (int x = 0; x < WorldSize; x++)

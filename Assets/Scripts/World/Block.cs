@@ -19,6 +19,7 @@ public enum BlockType
     Rock,
     Grass,
     Snow,
+    Floor,
 }
 
 public class Block : MonoBehaviour
@@ -28,17 +29,17 @@ public class Block : MonoBehaviour
     private Vector3 position;
     private bool haveNeighbor;
 
-    Vector2[,] blockUVs = 
-        {
-            {new Vector2( 0.125f, 0.375f ), new Vector2( 0.1875f, 0.375f),
-                new Vector2( 0.125f, 0.4375f ),new Vector2( 0.1875f, 0.4375f )},
-            {new Vector2( 0.1875f, 0.9375f ), new Vector2( 0.25f, 0.9375f),
-                new Vector2( 0.1875f, 1.0f ),new Vector2( 0.25f, 1.0f )},
-            {new Vector2( 0.125f, 0.9375f ), new Vector2( 0.1875f, 0.9375f),
-                new Vector2( 0.125f, 1.0f ),new Vector2( 0.1875f, 1.0f )},
-            {new Vector2( 0, 0.875f ), new Vector2( 0.0625f, 0.875f),
-                new Vector2( 0, 0.9375f ),new Vector2( 0.0625f, 0.9375f )},
-         }; // WIP better pos
+    private readonly Vector2[,] blockUVs = 
+    {
+        // Grass
+        {new Vector2(0, 0.5f), new Vector2(0.0625f, 0.5f), new Vector2(0, 0.5625f), new Vector2(0.0625f, 0.5625f)},
+        // Snow
+        {new Vector2(0.5f, 0.5f), new Vector2(0.5625f, 0.5f), new Vector2(0.5f, 5625f), new Vector2(0.5625f, 0.5625f)},
+        // Rock
+        {new Vector2(0.25f, 0.5f), new Vector2(0.3125f, 0.5f), new Vector2(0.25f, 0.5625f), new Vector2(0.3125f, 0.5625f)},
+        // Floor
+        {new Vector2(0.75f, 0.25f), new Vector2(0.8125f, 0.25f), new Vector2(0.75f, 0.3125f), new Vector2(0.8125f, 0.3125f)}
+    };
 
     public Block(BlockType type, Vector3 pos, Chunk chunk)
     {
@@ -67,21 +68,24 @@ public class Block : MonoBehaviour
 
         Vector2 uv = blockUVs[0, 0];
 
-
         switch (blockType)
         {
             case BlockType.None:
                 break;
             case BlockType.Rock:
-                uv = blockUVs[1, 1]; // WIP better pos
+                uv = blockUVs[2, 2];
                 break;
             case BlockType.Grass:
-                uv = blockUVs[0, 0]; // WIP better pos
+                uv = blockUVs[0, 0];
                 break;
             case BlockType.Snow:
-                uv = blockUVs[2, 2]; // WIP better pos
+                uv = blockUVs[1, 1];
+                break;
+            case BlockType.Floor:
+                uv = blockUVs[3, 3];
                 break;
             default:
+                uv = blockUVs[0, 0];
                 break;
         }
 
