@@ -149,7 +149,7 @@ public class Block : MonoBehaviour
     {
         Block[,,] chunks;
 
-        var chunkSize = World.Instance.ChunkSize;
+        var chunkSize = World.Instance.GetChunkSize();
         if (x < 0 || x >= chunkSize || y < 0 || y >= chunkSize || z < 0 || z >= chunkSize)
         {
             Vector3 neighbourChunksPos = chunkParent.SpawnedChunk.transform.position + new Vector3((x - (int)position.x) * chunkSize, (y - (int)position.y) * chunkSize, (z - (int)position.z) * chunkSize);

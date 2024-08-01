@@ -4,12 +4,21 @@ using UnityEngine;
 
 public class World : MonoBehaviour
 {
+    [Header("Materials")]
     [SerializeField] Material matAtlas;
-    public int WorldHeight;
-    public int ChunkSize;
-    public int WorldSize;
-    public Dictionary<string, Chunk> AllChunks = new();
 
+    [Space]
+    [Header("World Definition")]
+    [SerializeField] int worldHeight;
+    [SerializeField] int chunkSize;
+    [SerializeField] int worldRadius;
+
+    [Space]
+    [Header("Player")]
+    [SerializeField] Player player;
+
+    public Dictionary<string, Chunk> AllChunks = new();
+    
     public static World Instance;
 
     void Awake()
@@ -27,19 +36,28 @@ public class World : MonoBehaviour
         return pos.x + "_" + pos.y + "_" + pos.z;
     }
 
+    public int GetChunkSize()
+    {
+        return chunkSize;
+    }
+
     IEnumerator BuildWorldHeight()
     {
-        for (int z = 0; z < WorldSize; z++)
+        int playerPosX = (int)(player.transform.position.x / chunkSize);
+        int playerPosZ = (int)(player.transform.position.z / chunkSize);
+
+        for (int z = 0; z < worldRadius; z++)
         {
-            for (int x = 0; x < WorldSize; x++)
+            for (int x = 0; x < worldRadius; x++)
             {
-                for (int y = 0; y < WorldHeight; y++)
+                for (int y = 0; y < worldHeight; y++)
                 {
-                    Vector3 chunkPosition = new Vector3(x * ChunkSize, y * ChunkSize, z * ChunkSize);
+                    Vector3 chunkPosition = new Vector3((x + playerPosX) * chunkSize, y * chunkSize, (z + playerPosZ) * chunkSize);
                     string chunkName = SetChunkNameByPos(chunkPosition);
                     Chunk chunk = new Chunk(chunkPosition, matAtlas);
                     chunk.SpawnedChunk.transform.parent = this.transform;
                     AllChunks.Add(chunkName, chunk);
+                    yield return null;
                 }
             }
         }
@@ -49,5 +67,7 @@ public class World : MonoBehaviour
             chunk.Value.DrawChunk();
             yield return null;
         }
+
+        player.ActivatePlayer();
     }
 }

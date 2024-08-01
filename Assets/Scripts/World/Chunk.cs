@@ -14,7 +14,7 @@ public class Chunk
 
     private void BuildChunk()
     {
-        int worldSize = World.Instance.ChunkSize;
+        int worldSize = World.Instance.GetChunkSize();
         chunkData = new Block[worldSize, worldSize, worldSize];
 
         for (int z = 0; z < worldSize; z++)
@@ -30,6 +30,8 @@ public class Chunk
                     int wZ = (int)(z + SpawnedChunk.transform.position.z);
 
                     if (wY == 0)
+                        chunkData[x, y, z] = new Block(BlockType.Floor, pos, this);
+                    else if (wY == 180)
                         chunkData[x, y, z] = new Block(BlockType.Floor, pos, this);
                     else if (PerlinNoise.Instance.GenerateCaves(wX,wY, wZ, 0.1f, 3) < 0.44f)
                         chunkData[x, y, z] = new Block(BlockType.None, pos, this);
@@ -54,7 +56,7 @@ public class Chunk
 
     public void DrawChunk()
     {
-        int worldSize = World.Instance.ChunkSize;
+        int worldSize = World.Instance.GetChunkSize();
 
         for (int z = 0; z < worldSize; z++)
             for (int y = 0; y < worldSize; y++)
@@ -62,6 +64,9 @@ public class Chunk
                     chunkData[x, y, z].Draw();
 
         CombineQuads();
+
+        var collider = SpawnedChunk.AddComponent<MeshCollider>();
+        collider.sharedMesh = SpawnedChunk.transform.GetComponent<MeshFilter>().mesh;
     }
 
     private void CombineQuads()
