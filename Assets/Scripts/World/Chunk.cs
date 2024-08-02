@@ -39,6 +39,8 @@ public class Chunk
                         chunkData[x, y, z] = new Block(BlockType.Rock, pos, this);
                     else if (wY <= PerlinNoise.Instance.GenerateGrassHeight(wX, wZ))
                         chunkData[x, y, z] = new Block(BlockType.Grass, pos, this);
+                    else if (wY <= PerlinNoise.Instance.GenerateSnowHeight(wX, wZ))
+                        chunkData[x, y, z] = new Block(BlockType.Snow, pos, this);
                     else
                         chunkData[x, y, z] = new Block(BlockType.None, pos, this);
                 }

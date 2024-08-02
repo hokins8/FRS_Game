@@ -26,6 +26,12 @@ public class PerlinNoise : MonoBehaviour
         return height;
     }
 
+    public int GenerateSnowHeight(float x, float z)
+    {
+        int height = (int)Map(0, maxHeight + 5, 0, 1, MathMagic(x * smooth * 2, z * smooth * 2, octaves + 1, persistence));
+        return height;
+    }
+
     public float GenerateCaves(float x,float y, float z, float smooth, int octaves)
     {
         var xy = MathMagic(x * smooth, y * smooth, octaves, persistence);
