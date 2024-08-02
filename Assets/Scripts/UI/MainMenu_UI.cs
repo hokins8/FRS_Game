@@ -1,9 +1,8 @@
-using UnityEditor.Sprites;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceProviders;
 using UnityEngine.SceneManagement;
-using UnityEngine.U2D;
-using static UnityEditor.Progress;
 
 public class MainMenu_UI : MonoBehaviour
 {
@@ -15,12 +14,27 @@ public class MainMenu_UI : MonoBehaviour
     [Header("Camera")]
     [SerializeField] Camera mainMenuCamera;
 
+    public static MainMenu_UI Instance;
+
+    private AsyncOperationHandle<SceneInstance> loadingScene;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
     public void StartPlay()
     {
+        loadingScene = Addressables.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
         Addressables.LoadSceneAsync("GameScene", LoadSceneMode.Additive);
         ShowAllPanels(false);
         mainMenuCamera.gameObject.SetActive(false);
-        // WIP -> ADD Loading
+    }
+
+    public void UnloadLoadingScene()
+    {
+        if (loadingScene.IsDone)
+            Addressables.UnloadSceneAsync(loadingScene);
     }
 
     // WIP -> Load & Save

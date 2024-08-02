@@ -1,6 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.ResourceProviders;
+using UnityEngine.SceneManagement;
 
 public class World : MonoBehaviour
 {
@@ -46,6 +49,11 @@ public class World : MonoBehaviour
         int playerPosX = (int)(player.transform.position.x / chunkSize);
         int playerPosZ = (int)(player.transform.position.z / chunkSize);
 
+        float totalChunks = worldRadius * worldRadius * worldHeight;
+        float process = 0;
+
+        LoadingController loading = LoadingController.Instance;
+
         for (int z = 0; z < worldRadius; z++)
         {
             for (int x = 0; x < worldRadius; x++)
@@ -57,6 +65,14 @@ public class World : MonoBehaviour
                     Chunk chunk = new Chunk(chunkPosition, matAtlas);
                     chunk.SpawnedChunk.transform.parent = this.transform;
                     AllChunks.Add(chunkName, chunk);
+
+                    process++;
+                    if (loading != null)
+                    {
+                        float value = process / totalChunks * 100;
+                        loading.SetBar(value);
+                    }
+
                     yield return null;
                 }
             }
@@ -65,9 +81,18 @@ public class World : MonoBehaviour
         foreach (var chunk in AllChunks)
         {
             chunk.Value.DrawChunk();
+            process++;
+            if (loading != null)
+            {
+                float value = process / totalChunks * 100;
+                loading.SetBar(value);
+            }
             yield return null;
         }
 
         player.ActivatePlayer();
+
+        if (loading != null)
+            MainMenu_UI.Instance.UnloadLoadingScene();
     }
 }

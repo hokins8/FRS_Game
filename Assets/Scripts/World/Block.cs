@@ -22,7 +22,7 @@ public enum BlockType
     Floor,
 }
 
-public class Block : MonoBehaviour
+public class Block
 {
     private BlockType blockType;
     private Chunk chunkParent;

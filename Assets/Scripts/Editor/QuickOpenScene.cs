@@ -14,5 +14,10 @@ public class QuickOpenScene
     {
         EditorSceneManager.OpenScene("Assets/Scenes/MainScene.unity");
     }
+    [MenuItem("Open Scene/Loading Scene")]
+    public static void OpenLoadingScene()
+    {
+        EditorSceneManager.OpenScene("Assets/Scenes/LoadingScene.unity");
+    }
 }
 #endif
