@@ -1,9 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.ResourceProviders;
-using UnityEngine.SceneManagement;
 
 public class World : MonoBehaviour
 {
@@ -21,7 +19,12 @@ public class World : MonoBehaviour
     [SerializeField] Player player;
 
     public Dictionary<string, Chunk> AllChunks = new();
-    
+
+    private bool firstBuild = true;
+    private bool building = false;
+
+    private List<string> chunkToRemove = new List<string>();
+
     public static World Instance;
 
     void Awake()
@@ -46,6 +49,7 @@ public class World : MonoBehaviour
 
     IEnumerator BuildWorldHeight()
     {
+        building = true;
         int playerPosX = (int)(player.transform.position.x / chunkSize);
         int playerPosZ = (int)(player.transform.position.z / chunkSize);
 
@@ -62,15 +66,27 @@ public class World : MonoBehaviour
                 {
                     Vector3 chunkPosition = new Vector3((x + playerPosX) * chunkSize, y * chunkSize, (z + playerPosZ) * chunkSize);
                     string chunkName = SetChunkNameByPos(chunkPosition);
-                    Chunk chunk = new Chunk(chunkPosition, matAtlas);
-                    chunk.SpawnedChunk.transform.parent = this.transform;
-                    AllChunks.Add(chunkName, chunk);
 
-                    process++;
-                    if (loading != null)
+                    Chunk chunk;
+                    if (!AllChunks.TryGetValue(chunkName, out _))
                     {
-                        float value = process / totalChunks * 100;
-                        loading.SetBar(value);
+                        chunk = new Chunk(chunkPosition, matAtlas);
+                        chunk.SpawnedChunk.transform.parent = this.transform;
+                        AllChunks.Add(chunkName, chunk);
+                    }
+                    else
+                    {
+                        break;
+                    }
+
+                    if (firstBuild)
+                    {
+                        process++;
+                        if (loading != null)
+                        {
+                            float value = process / totalChunks * 100;
+                            loading.SetBar(value);
+                        }
                     }
 
                     yield return null;
@@ -78,21 +94,71 @@ public class World : MonoBehaviour
             }
         }
 
-        foreach (var chunk in AllChunks)
+        foreach (var chunk in AllChunks.ToList())
         {
-            chunk.Value.DrawChunk();
-            process++;
-            if (loading != null)
+            if (chunk.Value.ChunkStatus == ChunkStatus.ReadyToDraw)
             {
-                float value = process / totalChunks * 100;
-                loading.SetBar(value);
+                chunk.Value.DrawChunk();
             }
+            chunk.Value.ChunkStatus = ChunkStatus.Done;
+
+            if (chunk.Value.SpawnedChunk != null)
+            {
+                //if (Vector3.Distance(player.transform.position, chunk.Value.SpawnedChunk.transform.position) > worldRadius * chunkSize * 2) // WIP
+                //{
+                //    chunkToRemove.Add(chunk.Key);
+                //}
+            }
+
+            if (firstBuild)
+            {
+                process++;
+                if (loading != null)
+                {
+                    float value = process / totalChunks * 100;
+                    loading.SetBar(value);
+                }
+            }
+            
             yield return null;
         }
 
-        player.ActivatePlayer();
+        if (firstBuild)
+        {
+            player.ActivatePlayer();
+            if (loading != null)
+                MainMenu_UI.Instance.UnloadLoadingScene();
+            firstBuild = false;
+        }
+        building = false;
+    }
 
-        if (loading != null)
-            MainMenu_UI.Instance.UnloadLoadingScene();
+    private IEnumerator RemoveOldChunk()
+    {
+        foreach (var chunkName in chunkToRemove.ToList())
+        {
+            if (AllChunks.ContainsKey(chunkName))
+            {
+                Destroy(AllChunks[chunkName].SpawnedChunk);
+                AllChunks.Remove(chunkName);
+                yield return null;
+            }
+        }
+    }
+
+    private void Update()
+    {
+        //if (!firstBuild && !building)
+        //{
+        //    StartCoroutine(BuildWorldHeight());
+        //}
+        if (!firstBuild)
+        {
+            StartCoroutine(BuildWorldHeight());
+        }
+        if (chunkToRemove.Count > 0)
+        {
+            StartCoroutine(RemoveOldChunk());
+        }
     }
 }

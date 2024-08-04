@@ -1,9 +1,16 @@
 using UnityEngine;
 
+public enum ChunkStatus
+{
+    ReadyToDraw = 0,
+    Done = 1,
+}
+
 public class Chunk
 {
     public Material ChunkMaterial;
     public GameObject SpawnedChunk;
+    public ChunkStatus ChunkStatus;
 
     private Block[,,] chunkData;
 
@@ -43,6 +50,8 @@ public class Chunk
                         chunkData[x, y, z] = new Block(BlockType.Snow, pos, this);
                     else
                         chunkData[x, y, z] = new Block(BlockType.None, pos, this);
+
+                    ChunkStatus = ChunkStatus.ReadyToDraw;
                 }
             }
         }

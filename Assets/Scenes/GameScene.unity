@@ -149,10 +149,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   matAtlas: {fileID: 2100000, guid: c228d08a9dd21764088a27b26a1efd8c, type: 2}
-  worldHeight: 16
+  worldHeight: 12
   chunkSize: 12
   worldRadius: 5
   player: {fileID: 1866866597}
+  chunkToRemove: []
 --- !u!4 &23062968
 Transform:
   m_ObjectHideFlags: 0
