@@ -49,6 +49,11 @@ public class Block
         haveNeighbor = type != BlockType.None;
     }
 
+    public BlockType GetBlockType()
+    {
+        return blockType;
+    }
+
     private void CreateQuad(BlockSide side)
     {
         Mesh mesh = new Mesh();

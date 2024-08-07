@@ -50,6 +50,11 @@ public class World : MonoBehaviour
         return chunkSize;
     }
 
+    public int GetWorldRadius()
+    {
+        return worldRadius;
+    }
+
     private async void TryBuildAsyncWorld(Vector3 playerPos)
     {
         await AsyncBuildWorld(playerPos);
@@ -194,6 +199,7 @@ public class World : MonoBehaviour
         {
             if (AllChunks.ContainsKey(chunkName))
             {
+                AllChunks[chunkName].Save(); // WIP -> Better save
                 Destroy(AllChunks[chunkName].SpawnedChunk);
                 AllChunks.Remove(chunkName);
                 yield return null;
