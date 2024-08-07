@@ -1,7 +1,12 @@
+using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class World : MonoBehaviour
 {
@@ -31,23 +36,91 @@ public class World : MonoBehaviour
     {
         Instance = this;
     }
-
     void Start()
     {
+        Vector3 pos = player.transform.position;
+        player.transform.position = new Vector3(pos.x, PerlinNoise.Instance.GenerateGrassHeight(pos.x, pos.z) + 1, pos.z);
         StartCoroutine(BuildWorldHeight());
+
+        //Task.Run(() => chunkQueue.Enqueue(() =>
+        //{
+        //    Debug.Log("FIRST CALL");
+        //    StartCoroutine(BuildWorldHeight());
+        //}));
     }
 
     public string SetChunkNameByPos(Vector3 pos)
     {
         return pos.x + "_" + pos.y + "_" + pos.z;
     }
-
+    
     public int GetChunkSize()
     {
         return chunkSize;
     }
 
-    IEnumerator BuildWorldHeight()
+    private async void TryBuildAsyncWorld(Vector3 playerPos)
+    {
+        await AsyncBuildWorld(playerPos);
+    }
+
+    private async Task AsyncBuildWorld(Vector3 playerPos)
+    {
+        await Task.Yield();
+
+        building = true;
+        int playerPosX = (int)(playerPos.x / chunkSize);
+        int playerPosZ = (int)(playerPos.z / chunkSize);
+
+        for (int z = 0; z < worldRadius; z++)
+        {
+            for (int x = 0; x < worldRadius; x++)
+            {
+                for (int y = 0; y < worldHeight; y++)
+                {
+                    Vector3 chunkPosition = new Vector3((x + playerPosX) * chunkSize, y * chunkSize, (z + playerPosZ) * chunkSize);
+                    string chunkName = SetChunkNameByPos(chunkPosition);
+
+                    if (chunkToRemove.Contains(chunkName) || Vector3.Distance(playerPos, chunkPosition) > worldRadius * chunkSize)
+                        continue;
+
+                    Chunk chunk;
+                    if (!AllChunks.TryGetValue(chunkName, out _))
+                    {
+                        chunk = new Chunk(chunkPosition, matAtlas);
+                        chunk.SpawnedChunk.transform.parent = this.transform;
+                        AllChunks.Add(chunkName, chunk);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    await Task.Yield();
+                }
+            }
+        }
+
+        foreach (var chunk in AllChunks.ToList())
+        {
+            if (chunk.Value.ChunkStatus == ChunkStatus.ReadyToDraw)
+            {
+                chunk.Value.DrawChunk();
+            }
+            chunk.Value.ChunkStatus = ChunkStatus.Done;
+
+            if (chunk.Value.SpawnedChunk != null)
+            {
+                if (Vector3.Distance(playerPos, chunk.Value.SpawnedChunk.transform.position) > worldRadius * chunkSize)
+                {
+                    chunkToRemove.Add(chunk.Key);
+                }
+            }
+            await Task.Yield();
+        }
+        building = false;
+    }
+
+    private IEnumerator BuildWorldHeight()
     {
         building = true;
         int playerPosX = (int)(player.transform.position.x / chunkSize);
@@ -66,6 +139,9 @@ public class World : MonoBehaviour
                 {
                     Vector3 chunkPosition = new Vector3((x + playerPosX) * chunkSize, y * chunkSize, (z + playerPosZ) * chunkSize);
                     string chunkName = SetChunkNameByPos(chunkPosition);
+
+                    if (chunkToRemove.Contains(chunkName) || Vector3.Distance(player.transform.position, chunkPosition) > worldRadius * chunkSize)
+                        continue;
 
                     Chunk chunk;
                     if (!AllChunks.TryGetValue(chunkName, out _))
@@ -101,14 +177,6 @@ public class World : MonoBehaviour
                 chunk.Value.DrawChunk();
             }
             chunk.Value.ChunkStatus = ChunkStatus.Done;
-
-            if (chunk.Value.SpawnedChunk != null)
-            {
-                //if (Vector3.Distance(player.transform.position, chunk.Value.SpawnedChunk.transform.position) > worldRadius * chunkSize * 2) // WIP
-                //{
-                //    chunkToRemove.Add(chunk.Key);
-                //}
-            }
 
             if (firstBuild)
             {
@@ -148,13 +216,9 @@ public class World : MonoBehaviour
 
     private void Update()
     {
-        //if (!firstBuild && !building)
-        //{
-        //    StartCoroutine(BuildWorldHeight());
-        //}
         if (!firstBuild)
         {
-            StartCoroutine(BuildWorldHeight());
+            TryBuildAsyncWorld(player.transform.position);
         }
         if (chunkToRemove.Count > 0)
         {
