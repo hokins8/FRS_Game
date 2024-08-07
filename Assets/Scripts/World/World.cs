@@ -4,9 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using UnityEditor.Localization.Plugins.XLIFF.V12;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class World : MonoBehaviour
 {
@@ -26,7 +24,6 @@ public class World : MonoBehaviour
     public Dictionary<string, Chunk> AllChunks = new();
 
     private bool firstBuild = true;
-    private bool building = false;
 
     private List<string> chunkToRemove = new List<string>();
 
@@ -41,12 +38,6 @@ public class World : MonoBehaviour
         Vector3 pos = player.transform.position;
         player.transform.position = new Vector3(pos.x, PerlinNoise.Instance.GenerateGrassHeight(pos.x, pos.z) + 1, pos.z);
         StartCoroutine(BuildWorldHeight());
-
-        //Task.Run(() => chunkQueue.Enqueue(() =>
-        //{
-        //    Debug.Log("FIRST CALL");
-        //    StartCoroutine(BuildWorldHeight());
-        //}));
     }
 
     public string SetChunkNameByPos(Vector3 pos)
@@ -68,7 +59,6 @@ public class World : MonoBehaviour
     {
         await Task.Yield();
 
-        building = true;
         int playerPosX = (int)(playerPos.x / chunkSize);
         int playerPosZ = (int)(playerPos.z / chunkSize);
 
@@ -117,12 +107,10 @@ public class World : MonoBehaviour
             }
             await Task.Yield();
         }
-        building = false;
     }
 
     private IEnumerator BuildWorldHeight()
     {
-        building = true;
         int playerPosX = (int)(player.transform.position.x / chunkSize);
         int playerPosZ = (int)(player.transform.position.z / chunkSize);
 
@@ -198,7 +186,6 @@ public class World : MonoBehaviour
                 MainMenu_UI.Instance.UnloadLoadingScene();
             firstBuild = false;
         }
-        building = false;
     }
 
     private IEnumerator RemoveOldChunk()
@@ -216,13 +203,9 @@ public class World : MonoBehaviour
 
     private void Update()
     {
-        if (!firstBuild)
-        {
-            TryBuildAsyncWorld(player.transform.position);
-        }
         if (chunkToRemove.Count > 0)
-        {
             StartCoroutine(RemoveOldChunk());
-        }
+        if (!firstBuild)
+            TryBuildAsyncWorld(player.transform.position);
     }
 }
