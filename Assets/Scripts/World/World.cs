@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class World : MonoBehaviour
 {
@@ -20,6 +21,7 @@ public class World : MonoBehaviour
     [Space]
     [Header("Player")]
     [SerializeField] Player player;
+    [SerializeField] Slider loadingSlider;
 
     public Dictionary<string, Chunk> AllChunks = new();
 
@@ -210,13 +212,23 @@ public class World : MonoBehaviour
         }
     }
 
+    private IEnumerator Save()
+    {
+        float process = 0;
+        foreach (var chunk in AllChunks)
+        {
+            chunk.Value.Save();
+            process++;
+            loadingSlider.value = process / AllChunks.Count * 100;
+            yield return null;
+        }
+        loadingSlider.value = 0;
+    }
+
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.F5)) // WIP -> possibly rework to the new input system
-        {
-            foreach(var chunk in AllChunks)
-                chunk.Value.Save();
-        }
+            StartCoroutine(Save());
 
         if (chunkToRemove.Count > 0)
             StartCoroutine(RemoveOldChunk());
