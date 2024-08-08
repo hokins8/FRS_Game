@@ -62,6 +62,9 @@ public class World : MonoBehaviour
 
     private async Task AsyncBuildWorld(Vector3 playerPos)
     {
+        if (!Application.isPlaying)
+            return;
+
         await Task.Yield();
 
         int playerPosX = (int)(playerPos.x / chunkSize);
@@ -199,7 +202,7 @@ public class World : MonoBehaviour
         {
             if (AllChunks.ContainsKey(chunkName))
             {
-                AllChunks[chunkName].Save(); // WIP -> Better save
+                AllChunks[chunkName].Save();
                 Destroy(AllChunks[chunkName].SpawnedChunk);
                 AllChunks.Remove(chunkName);
                 yield return null;
@@ -209,6 +212,12 @@ public class World : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.F5)) // WIP -> possibly rework to the new input system
+        {
+            foreach(var chunk in AllChunks)
+                chunk.Value.Save();
+        }
+
         if (chunkToRemove.Count > 0)
             StartCoroutine(RemoveOldChunk());
         if (!firstBuild)

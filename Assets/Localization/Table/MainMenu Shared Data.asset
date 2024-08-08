@@ -31,6 +31,14 @@ MonoBehaviour:
     m_Key: MM_Exit
     m_Metadata:
       m_Items: []
+  - m_Id: 5711771565584384
+    m_Key: MM_Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 5712299666206720
+    m_Key: MM_NewGame
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

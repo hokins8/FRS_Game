@@ -49,10 +49,11 @@ public class Chunk
 
     private string BuildChunkFileName(Vector3 pos)
     {
-        return $"{Application.persistentDataPath}/SaveData/Chunk_{(int)pos.x}_{(int)pos.y}_{(int)pos.z}_{World.Instance.GetChunkSize()}_{World.Instance.GetWorldRadius()}.dat";
+        var mainMenu = MainMenu_UI.Instance;
+        return $"{mainMenu.SavesLocation}\\{mainMenu.CurrentFolder}/Chunk_{(int)pos.x}_{(int)pos.y}_{(int)pos.z}_{World.Instance.GetChunkSize()}_{World.Instance.GetWorldRadius()}.dat";
     }
 
-    private bool Load() // read data from file
+    private bool Load()
     {
         string chunkFile = BuildChunkFileName(SpawnedChunk.transform.position);
         if (File.Exists(chunkFile))
@@ -62,13 +63,12 @@ public class Chunk
             blockData = new BlockData();
             blockData = (BlockData)bf.Deserialize(file);
             file.Close();
-            Debug.Log(chunkFile);
             return true;
         }
         return false;
     }
 
-    public void Save() // Write Data To File
+    public void Save()
     {
         string chunkFile = BuildChunkFileName(SpawnedChunk.transform.position);
         if (!File.Exists(chunkFile))
@@ -84,7 +84,6 @@ public class Chunk
     private void BuildChunk()
     {
         bool loadedData = Load();
-
 
         int worldSize = World.Instance.GetChunkSize();
         chunkData = new Block[worldSize, worldSize, worldSize];
