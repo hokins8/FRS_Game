@@ -104,6 +104,9 @@ public class MainMenu_UI : MonoBehaviour
         ShowAllPanels(false);
         mainMenuCamera.gameObject.SetActive(false);
 
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+
         Directory.CreateDirectory($"{SavesLocation}\\{CurrentFolder}");
     }
 

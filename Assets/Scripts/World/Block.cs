@@ -29,6 +29,8 @@ public class Block
     private Vector3 position;
     private bool haveNeighbor;
 
+    private int health = 0;
+
     private readonly Vector2[,] blockUVs = 
     {
         // Grass
@@ -47,11 +49,35 @@ public class Block
         position = pos;
         chunkParent = chunk;
         haveNeighbor = type != BlockType.None;
+
+        if (type != BlockType.None)
+        {
+            var block = BlockCollection.Instance.GetBlock(type);
+            if (block != null)
+                health = block.GetHardeness();
+        }
     }
 
     public BlockType GetBlockType()
     {
         return blockType;
+    }
+
+    public void ForceSetType(BlockType type)
+    {
+        blockType = type;
+        haveNeighbor = type != BlockType.None;
+    }
+
+    public void HitBlock()
+    {
+        health--;
+        if (health <= 0)
+        {
+            blockType = BlockType.None;
+            haveNeighbor = false;
+            chunkParent.Redraw();
+        }
     }
 
     private void CreateQuad(BlockSide side)

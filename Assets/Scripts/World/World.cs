@@ -35,6 +35,7 @@ public class World : MonoBehaviour
     {
         Instance = this;
     }
+
     void Start()
     {
         Vector3 pos = player.transform.position;
@@ -138,7 +139,7 @@ public class World : MonoBehaviour
                     Vector3 chunkPosition = new Vector3((x + playerPosX) * chunkSize, y * chunkSize, (z + playerPosZ) * chunkSize);
                     string chunkName = SetChunkNameByPos(chunkPosition);
 
-                    if (chunkToRemove.Contains(chunkName) || Vector3.Distance(player.transform.position, chunkPosition) > worldRadius * chunkSize)
+                    if (chunkToRemove.Contains(chunkName) || Vector3.Distance(player.transform.position, chunkPosition) > worldRadius * chunkSize) // WIP -> better spawn/despawn world
                         continue;
 
                     Chunk chunk;

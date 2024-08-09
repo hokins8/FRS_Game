@@ -5,7 +5,7 @@ public class BlockScriptObj : ScriptableObject
 {
     [SerializeField] BlockType blockType;
     [SerializeField] Material blockMaterial; // old
-    [SerializeField] float hardeness;
+    [SerializeField] int hardeness;
 
     public BlockType GetBlockType()
     {
@@ -17,7 +17,7 @@ public class BlockScriptObj : ScriptableObject
         return blockMaterial;
     }
 
-    public float GetHardeness()
+    public int GetHardeness()
     {
         return hardeness;
     }

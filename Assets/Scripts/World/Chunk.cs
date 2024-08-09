@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum ChunkStatus
@@ -41,6 +42,10 @@ public class Chunk
 
     private Block[,,] chunkData;
     private BlockData blockData;
+
+    private MeshFilter meshFilter;
+    private MeshRenderer meshRenderer;
+    private MeshCollider collider;
 
     public Block[,,] GetChunkData()
     {
@@ -146,8 +151,16 @@ public class Chunk
 
         CombineQuads();
 
-        var collider = SpawnedChunk.AddComponent<MeshCollider>();
-        collider.sharedMesh = SpawnedChunk.transform.GetComponent<MeshFilter>().mesh;
+        collider = SpawnedChunk.AddComponent<MeshCollider>();
+        collider.sharedMesh = meshFilter.mesh;
+    }
+
+    public void Redraw()
+    {
+        GameObject.DestroyImmediate(meshFilter);
+        GameObject.DestroyImmediate(meshRenderer);
+        GameObject.DestroyImmediate(collider);
+        DrawChunk();
     }
 
     private void CombineQuads()
@@ -163,12 +176,12 @@ public class Chunk
             i++;
         }
 
-        MeshFilter mf = (MeshFilter)SpawnedChunk.AddComponent(typeof(MeshFilter));
-        mf.mesh = new Mesh();
+        meshFilter = SpawnedChunk.AddComponent<MeshFilter>();
+        meshFilter.mesh = new Mesh();
 
-        mf.mesh.CombineMeshes(combine);
+        meshFilter.mesh.CombineMeshes(combine);
 
-        MeshRenderer meshRenderer = SpawnedChunk.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+        meshRenderer = SpawnedChunk.AddComponent<MeshRenderer>();
         meshRenderer.material = ChunkMaterial;
 
         foreach (Transform quad in SpawnedChunk.transform)

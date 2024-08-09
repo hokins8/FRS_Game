@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   blockType: 4
   blockMaterial: {fileID: 2100000, guid: d50a3b94ce7ef5640afb8bb2635dbebc, type: 2}
-  hardeness: 99999
+  hardeness: -1
