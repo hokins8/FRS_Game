@@ -50,6 +50,11 @@ public class Block
         chunkParent = chunk;
         haveNeighbor = type != BlockType.None;
 
+        UpdateHealth(type);
+    }
+
+    private void UpdateHealth(BlockType type)
+    {
         if (type != BlockType.None)
         {
             var block = BlockCollection.Instance.GetBlock(type);
@@ -61,6 +66,16 @@ public class Block
     public BlockType GetBlockType()
     {
         return blockType;
+    }
+
+    public Chunk GetChunkParent()
+    {
+        return chunkParent;
+    }
+
+    public Vector3 GetPosition()
+    {
+        return position;
     }
 
     public void ForceSetType(BlockType type)
@@ -78,6 +93,13 @@ public class Block
             haveNeighbor = false;
             chunkParent.Redraw();
         }
+    }
+
+    public void BuildBlock(BlockType type)
+    {
+        ForceSetType(type);
+        UpdateHealth(type);
+        chunkParent.Redraw();
     }
 
     private void CreateQuad(BlockSide side)

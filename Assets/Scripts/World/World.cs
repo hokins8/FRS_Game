@@ -58,6 +58,38 @@ public class World : MonoBehaviour
         return worldRadius;
     }
 
+    public Block GetWorldBlock(Vector3 pos)
+    {
+        int chunkX;
+        int chunkY;
+        int chunkZ;
+
+        if (pos.x < 0)
+            chunkX = (int)((Mathf.Round(pos.x - chunkSize) + 1) / chunkSize) * chunkSize;
+        else
+            chunkX = (int)(Mathf.Round(pos.x) / chunkSize) * chunkSize;
+
+        if (pos.y < 0)
+            chunkY = (int)((Mathf.Round(pos.y - chunkSize) + 1) / chunkSize) * chunkSize;
+        else
+            chunkY = (int)(Mathf.Round(pos.y) / chunkSize) * chunkSize;
+
+        if (pos.z < 0)
+            chunkZ = (int)((Mathf.Round(pos.z - chunkSize) + 1) / chunkSize) * chunkSize;
+        else
+            chunkZ = (int)(Mathf.Round(pos.z) / chunkSize) * chunkSize;
+
+        int blockX = (int)Mathf.Abs((float)Math.Round(pos.x) - chunkX);
+        int blockY = (int)Mathf.Abs((float)Math.Round(pos.y) - chunkY);
+        int blockZ = (int)Mathf.Abs((float)Math.Round(pos.z) - chunkZ);
+
+        string chunkName = SetChunkNameByPos(new Vector3(chunkX, chunkY, chunkZ));
+        if (AllChunks.TryGetValue(chunkName, out Chunk chunk))
+            return chunk.GetChunkData()[blockX, blockY, blockZ];
+        else
+            return null;
+    }
+
     private async void TryBuildAsyncWorld(Vector3 playerPos)
     {
         await AsyncBuildWorld(playerPos);

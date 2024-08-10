@@ -17,50 +17,91 @@ public class PlayerInteract : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
             TryDestroy();
+        if (Input.GetMouseButtonDown(1))
+            TrySpawnBlock();
     }
 
     private void TryDestroy()
     {
         RaycastHit hit;
-
         if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 4))
         {
+            World world = World.Instance;
+            if (!world.AllChunks.TryGetValue(hit.collider.gameObject.name, out _))
+                return;
+
             Vector3 hitBlock = hit.point - hit.normal / 2.0f;
 
-            int x = (int)(Mathf.Round(hitBlock.x) - hit.collider.gameObject.transform.position.x);
-            int y = (int)(Mathf.Round(hitBlock.y) - hit.collider.gameObject.transform.position.y);
-            int z = (int)(Mathf.Round(hitBlock.z) - hit.collider.gameObject.transform.position.z);
+            Block block = world.GetWorldBlock(hitBlock);
+            if (block == null)
+                return;
+            Chunk hitChunk = block.GetChunkParent();
 
-            if (World.Instance.AllChunks.TryGetValue(hit.collider.gameObject.name, out Chunk hitChunk))
-            {
-                hitChunk.GetChunkData()[x, y, z].HitBlock();
+            block.HitBlock();
 
-                List<string> neighboursUpdates = new List<string>();
-                float thisChunkx = hitChunk.SpawnedChunk.transform.position.x;
-                float thisChunky = hitChunk.SpawnedChunk.transform.position.y;
-                float thisChunkz = hitChunk.SpawnedChunk.transform.position.z;
+            List<string> neighboursUpdates = new List<string>();
+            float chunkX = hitChunk.SpawnedChunk.transform.position.x;
+            float chunkY = hitChunk.SpawnedChunk.transform.position.y;
+            float chunkZ = hitChunk.SpawnedChunk.transform.position.z;
 
-                if (x == 0)
-                    neighboursUpdates.Add(World.Instance.SetChunkNameByPos(new Vector3(thisChunkx - chunkSize, thisChunky, thisChunkz)));
-                if (x == chunkSize - 1)
-                    neighboursUpdates.Add(World.Instance.SetChunkNameByPos(new Vector3(thisChunkx + chunkSize, thisChunky, thisChunkz)));
-                if (y == 0)
-                    neighboursUpdates.Add(World.Instance.SetChunkNameByPos(new Vector3(thisChunkx, thisChunky - chunkSize, thisChunkz)));
-                if (y == chunkSize - 1)
-                    neighboursUpdates.Add(World.Instance.SetChunkNameByPos(new Vector3(thisChunkx, thisChunky + chunkSize, thisChunkz)));
-                if (z == 0)
-                    neighboursUpdates.Add(World.Instance.SetChunkNameByPos(new Vector3(thisChunkx, thisChunky, thisChunkz - chunkSize)));
-                if (z == chunkSize - 1)
-                    neighboursUpdates.Add(World.Instance.SetChunkNameByPos(new Vector3(thisChunkx, thisChunky, thisChunkz + chunkSize)));
+            if (block.GetPosition().x == 0)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX - chunkSize, chunkY, chunkZ)));
+            if (block.GetPosition().x == chunkSize - 1)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX + chunkSize, chunkY, chunkZ)));
+            if (block.GetPosition().y == 0)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY - chunkSize, chunkZ)));
+            if (block.GetPosition().y == chunkSize - 1)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY + chunkSize, chunkZ)));
+            if (block.GetPosition().z == 0)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY, chunkZ - chunkSize)));
+            if (block.GetPosition().z == chunkSize - 1)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY, chunkZ + chunkSize)));
 
-                foreach (string cname in neighboursUpdates)
-                {
-                    if (World.Instance.AllChunks.TryGetValue(cname, out Chunk chunk))
-                    {
-                        chunk.Redraw();
-                    }
-                }
-            }
+            foreach (string cname in neighboursUpdates)
+                if (world.AllChunks.TryGetValue(cname, out Chunk chunk))
+                    chunk.Redraw();
+        }
+    }
+
+    private void TrySpawnBlock()
+    {
+        RaycastHit hit;
+        if (Physics.Raycast(cam.transform.position, cam.transform.forward, out hit, 4))
+        {
+            World world = World.Instance;
+            if (!world.AllChunks.TryGetValue(hit.collider.gameObject.name, out _))
+                return;
+
+            Vector3 hitBlock = hit.point + hit.normal / 2.0f;
+
+            Block block = world.GetWorldBlock(hitBlock);
+            if (block == null) 
+                return;
+            Chunk hitChunk = block.GetChunkParent();
+
+            block.BuildBlock(BlockType.Grass); // WIP + add CubeWire
+
+            List<string> neighboursUpdates = new List<string>();
+            float chunkX = hitChunk.SpawnedChunk.transform.position.x;
+            float chunkY = hitChunk.SpawnedChunk.transform.position.y;
+            float chunkZ = hitChunk.SpawnedChunk.transform.position.z;
+
+            if (block.GetPosition().x == 0)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX - chunkSize, chunkY, chunkZ)));
+            if (block.GetPosition().x == chunkSize - 1)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX + chunkSize, chunkY, chunkZ)));
+            if (block.GetPosition().y == 0)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY - chunkSize, chunkZ)));
+            if (block.GetPosition().y == chunkSize - 1)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY + chunkSize, chunkZ)));
+            if (block.GetPosition().z == 0)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY, chunkZ - chunkSize)));
+            if (block.GetPosition().z == chunkSize - 1)
+                neighboursUpdates.Add(world.SetChunkNameByPos(new Vector3(chunkX, chunkY, chunkZ + chunkSize)));
+
+            foreach (string cname in neighboursUpdates)
+                if (world.AllChunks.TryGetValue(cname, out Chunk chunk))
+                    chunk.Redraw();
         }
     }
 }
