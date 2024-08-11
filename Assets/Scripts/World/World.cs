@@ -41,6 +41,8 @@ public class World : MonoBehaviour
         Vector3 pos = player.transform.position;
         player.transform.position = new Vector3(pos.x, PerlinNoise.Instance.GenerateGrassHeight(pos.x, pos.z) + 1, pos.z);
         StartCoroutine(BuildWorldHeight());
+
+        InvokeRepeating(nameof(UpdateWorld), 10, 5);
     }
 
     public string SetChunkNameByPos(Vector3 pos)
@@ -132,13 +134,14 @@ public class World : MonoBehaviour
                 }
             }
         }
+    }
 
+    private async void RemoveChunk(Vector3 playerPos)
+    {
         foreach (var chunk in AllChunks.ToList())
         {
             if (chunk.Value.ChunkStatus == ChunkStatus.ReadyToDraw)
-            {
                 chunk.Value.DrawChunk();
-            }
             chunk.Value.ChunkStatus = ChunkStatus.Done;
 
             if (chunk.Value.SpawnedChunk != null)
@@ -231,7 +234,7 @@ public class World : MonoBehaviour
         }
     }
 
-    private IEnumerator RemoveOldChunk()
+    private async void RemoveOldChunk()
     {
         foreach (var chunkName in chunkToRemove.ToList())
         {
@@ -240,7 +243,7 @@ public class World : MonoBehaviour
                 AllChunks[chunkName].Save();
                 Destroy(AllChunks[chunkName].SpawnedChunk);
                 AllChunks.Remove(chunkName);
-                yield return null;
+                await Task.Yield();
             }
         }
     }
@@ -262,10 +265,16 @@ public class World : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.F5)) // WIP -> possibly rework to the new input system
             StartCoroutine(Save());
+    }
 
+    private void UpdateWorld()
+    {
         if (chunkToRemove.Count > 0)
-            StartCoroutine(RemoveOldChunk());
+            RemoveOldChunk();
         if (!firstBuild)
+        {
             TryBuildAsyncWorld(player.transform.position);
+            RemoveChunk(player.transform.position);
+        }
     }
 }
