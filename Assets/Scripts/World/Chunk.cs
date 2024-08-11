@@ -110,9 +110,9 @@ public class Chunk
                         continue;
                     }
 
-                    if (wY == 0)
+                    if (wY <= 0)
                         chunkData[x, y, z] = new Block(BlockType.Floor, pos, this);
-                    else if (wY == 180)
+                    else if (wY >= 140)
                         chunkData[x, y, z] = new Block(BlockType.Floor, pos, this);
                     else if (PerlinNoise.Instance.GenerateCaves(wX,wY, wZ, 0.1f, 3) < 0.44f)
                         chunkData[x, y, z] = new Block(BlockType.None, pos, this);
