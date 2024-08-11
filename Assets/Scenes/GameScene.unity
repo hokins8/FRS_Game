@@ -1333,8 +1333,8 @@ GameObject:
   - component: {fileID: 1866866594}
   - component: {fileID: 1866866593}
   - component: {fileID: 1866866592}
-  - component: {fileID: 1866866591}
   - component: {fileID: 1866866596}
+  - component: {fileID: 1866866591}
   - component: {fileID: 1866866597}
   - component: {fileID: 1866866598}
   m_Layer: 0
@@ -1358,6 +1358,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 5
   sensitivity: 2
+  jumpForce: 2.5
 --- !u!136 &1866866592
 CapsuleCollider:
   m_ObjectHideFlags: 0

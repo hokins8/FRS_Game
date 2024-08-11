@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    public float speed = 5.0f;
-    public float sensitivity = 2.0f;
+    [SerializeField] float speed;
+    [SerializeField] float sensitivity;
+    [SerializeField] float jumpForce;
 
     void Update()
     {
@@ -16,6 +17,9 @@ public class PlayerController : MonoBehaviour
 
         float rotationHorizontal = Input.GetAxis("Mouse X") * sensitivity;
         float rotationVertical = Input.GetAxis("Mouse Y") * sensitivity;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            transform.Translate(0, jumpForce, 0);
 
         transform.Rotate(0, rotationHorizontal, 0);
         Camera.main.transform.Rotate(-rotationVertical, 0, 0);

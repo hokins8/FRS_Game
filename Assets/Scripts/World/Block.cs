@@ -102,6 +102,15 @@ public class Block
 
     private void CreateQuad(BlockSide side)
     {
+        if (!Application.isPlaying)
+            return;
+
+        if (chunkParent == null)
+            return;
+
+        if (chunkParent.SpawnedChunk == null)
+            return;
+
         Mesh mesh = new Mesh();
         mesh.name = "S_Mesh" + side.ToString();
 
@@ -198,6 +207,12 @@ public class Block
 
     public bool HasNeighbour(int x, int y, int z)
     {
+        if (chunkParent == null)
+            return false;
+
+        if (chunkParent.SpawnedChunk == null)
+            return false;
+
         Block[,,] chunks;
 
         var chunkSize = World.Instance.GetChunkSize();
