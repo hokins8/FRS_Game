@@ -21,6 +21,7 @@ public class World : MonoBehaviour
     [Space]
     [Header("Player")]
     [SerializeField] Player player;
+    [SerializeField] GameObject mainCanvas;
     [SerializeField] Slider loadingSlider;
 
     public Dictionary<string, Chunk> AllChunks = new();
@@ -38,6 +39,7 @@ public class World : MonoBehaviour
 
     void Start()
     {
+        mainCanvas.SetActive(false);
         Vector3 pos = player.transform.position;
         player.transform.position = new Vector3(pos.x, PerlinNoise.Instance.GenerateGrassHeight(pos.x, pos.z) + 1, pos.z);
         StartCoroutine(BuildWorldHeight());
@@ -228,6 +230,7 @@ public class World : MonoBehaviour
         if (firstBuild)
         {
             player.ActivatePlayer();
+            mainCanvas.SetActive(true);
             if (loading != null)
                 MainMenu_UI.Instance.UnloadLoadingScene();
             firstBuild = false;

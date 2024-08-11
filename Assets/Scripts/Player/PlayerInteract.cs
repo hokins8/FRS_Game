@@ -17,10 +17,10 @@ public class PlayerInteract : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) // WIP -> possibly rework to the new input system
+        if (Input.GetMouseButtonDown(0) && !showWire) // WIP -> possibly rework to the new input system
             TryDestroy();
 
-        if (Input.GetMouseButtonDown(1) && showWire)
+        if (Input.GetMouseButtonDown(0) && showWire)
             TrySpawnBlock();
 
         if (Input.GetKey(KeyCode.LeftShift))
@@ -113,6 +113,12 @@ public class PlayerInteract : MonoBehaviour
 
     private void TrySpawnBlock()
     {
+        var playerInventory = Player.Instance.PlayerInventory;
+        BlockType currentBlockTypeToSpawn = playerInventory.GetCurrentBlockTypeToSpawn();
+
+        if (playerInventory.GetPlayerInventory()[currentBlockTypeToSpawn] <= 0)
+            return;
+
         RaycastHit hit;
         if (Physics.Raycast(playerCamera.transform.position, playerCamera.transform.forward, out hit, 4))
         {
@@ -126,8 +132,8 @@ public class PlayerInteract : MonoBehaviour
             if (block == null) 
                 return;
             Chunk hitChunk = block.GetChunkParent();
-
-            block.BuildBlock(BlockType.Grass); // WIP
+            
+            block.BuildBlock(currentBlockTypeToSpawn);
 
             List<string> neighboursUpdates = new List<string>();
             float chunkX = hitChunk.SpawnedChunk.transform.position.x;

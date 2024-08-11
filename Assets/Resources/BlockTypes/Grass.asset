@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Grass
   m_EditorClassIdentifier: 
   blockType: 2
+  blockSprite: {fileID: -3700535049094905009, guid: 4425ede830251ba49a00ca278e4ffa54, type: 3}
   blockMaterial: {fileID: 2100000, guid: a71f45e346c9af24b95c3cb6480abe52, type: 2}
   hardeness: 3
-  posY: 0

@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Rock
   m_EditorClassIdentifier: 
   blockType: 1
+  blockSprite: {fileID: 4291221409946835625, guid: 4425ede830251ba49a00ca278e4ffa54, type: 3}
   blockMaterial: {fileID: 2100000, guid: 54417fc372a26aa4fa46dfac315a633a, type: 2}
   hardeness: 6

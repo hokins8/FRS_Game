@@ -13,5 +13,6 @@ MonoBehaviour:
   m_Name: Floor
   m_EditorClassIdentifier: 
   blockType: 4
+  blockSprite: {fileID: 138539037323219128, guid: 4425ede830251ba49a00ca278e4ffa54, type: 3}
   blockMaterial: {fileID: 2100000, guid: d50a3b94ce7ef5640afb8bb2635dbebc, type: 2}
   hardeness: -1

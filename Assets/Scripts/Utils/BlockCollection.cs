@@ -23,6 +23,8 @@ public class BlockCollection : MonoBehaviour
                 Debug.LogError("Bad Set of BlockType");
             if (obj.GetMaterial() == null)
                 Debug.LogError("Null Material");
+            if (obj.GetBlockSprite() == null)
+                Debug.LogError("Null Sprite");
         }
     }
 

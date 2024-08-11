@@ -87,6 +87,10 @@ public class Block
         health--;
         if (health <= 0)
         {
+            var playerInventory = Player.Instance.PlayerInventory;
+            playerInventory.UseInventory(blockType);
+            playerInventory.UpdateInventory();
+
             blockType = BlockType.None;
             haveNeighbor = false;
             chunkParent.Redraw();
@@ -95,6 +99,10 @@ public class Block
 
     public void BuildBlock(BlockType type)
     {
+        var playerInventory = Player.Instance.PlayerInventory;
+        playerInventory.UseInventory(type, true);
+        playerInventory.UpdateInventory();
+
         ForceSetType(type);
         UpdateHealth(type);
         chunkParent.Redraw();

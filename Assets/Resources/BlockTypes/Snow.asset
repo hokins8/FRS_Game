@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Snow
   m_EditorClassIdentifier: 
   blockType: 3
+  blockSprite: {fileID: -8078365911260540296, guid: 4425ede830251ba49a00ca278e4ffa54, type: 3}
   blockMaterial: {fileID: 2100000, guid: 040e8d3bc11530042a1b9bc4dc72a380, type: 2}
   hardeness: 1
-  posY: 0

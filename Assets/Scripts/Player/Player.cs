@@ -4,8 +4,15 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public PlayerInventory PlayerInventory;
     [SerializeField] GameObject playerObject;
-    // WIP
+
+    public static Player Instance;
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {

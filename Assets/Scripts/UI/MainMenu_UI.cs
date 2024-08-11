@@ -97,6 +97,11 @@ public class MainMenu_UI : MonoBehaviour
         }
     }
 
+    public void ReturnLoadButton(LoadElementUI element)
+    {
+        loadElementPool.ReturnElement(element);
+    }
+
     public void StartPlay()
     {
         loadingScene = Addressables.LoadSceneAsync("LoadingScene", LoadSceneMode.Additive);
