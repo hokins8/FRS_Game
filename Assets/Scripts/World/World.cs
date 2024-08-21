@@ -109,9 +109,9 @@ public class World : MonoBehaviour
         int playerPosX = (int)(playerPos.x / chunkSize);
         int playerPosZ = (int)(playerPos.z / chunkSize);
 
-        for (int z = 0; z < worldRadius; z++)
+        for (int z = -worldRadius; z < worldRadius; z++)
         {
-            for (int x = 0; x < worldRadius; x++)
+            for (int x = -worldRadius; x < worldRadius; x++)
             {
                 for (int y = 0; y < worldHeight; y++)
                 {
@@ -167,9 +167,9 @@ public class World : MonoBehaviour
 
         LoadingController loading = LoadingController.Instance;
 
-        for (int z = 0; z < worldRadius; z++)
+        for (int z = -worldRadius; z < worldRadius; z++)
         {
-            for (int x = 0; x < worldRadius; x++)
+            for (int x = -worldRadius; x < worldRadius; x++)
             {
                 for (int y = 0; y < worldHeight; y++)
                 {
