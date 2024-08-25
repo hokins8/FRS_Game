@@ -74,15 +74,20 @@ public class Chunk
 
     public void Save()
     {
-        string chunkFile = BuildChunkFileName(SpawnedChunk.transform.position);
-        if (!File.Exists(chunkFile))
-            Directory.CreateDirectory(Path.GetDirectoryName(chunkFile));
+        if (SpawnedChunk != null)
+        {
+            string chunkFile = BuildChunkFileName(SpawnedChunk.transform.position);
+            if (!File.Exists(chunkFile))
+                Directory.CreateDirectory(Path.GetDirectoryName(chunkFile));
 
-        BinaryFormatter bf = new BinaryFormatter();
-        FileStream file = File.Open(chunkFile, FileMode.OpenOrCreate);
-        blockData = new BlockData(chunkData);
-        bf.Serialize(file, blockData);
-        file.Close();
+            BinaryFormatter bf = new BinaryFormatter();
+            FileStream file = File.Open(chunkFile, FileMode.OpenOrCreate);
+            blockData = new BlockData(chunkData);
+            bf.Serialize(file, blockData);
+            file.Close();
+
+            Player.Instance.PlayerInventory.SaveInventory();
+        }
     }
 
     private void BuildChunk()

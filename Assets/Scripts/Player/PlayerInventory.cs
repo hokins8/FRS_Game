@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Tools.UnityUtilities;
 using UnityEngine;
 using TMPro;
+using Newtonsoft.Json;
+using System;
+using System.IO;
 
 public class PlayerInventory : MonoBehaviour
 {
@@ -11,7 +14,7 @@ public class PlayerInventory : MonoBehaviour
 
     [SerializeField] TMP_Text currentBlockTypeText;
 
-    private Dictionary<BlockType, int> inventory = new Dictionary<BlockType, int>(); // WIP serialize
+    private GameDataInventory gameDataInventory;
 
     private BlockType blockTypeToSpawn = BlockType.Grass;
 
@@ -25,10 +28,7 @@ public class PlayerInventory : MonoBehaviour
 
     void Awake()
     {
-        inventory.Add(BlockType.Snow, 5);
-        inventory.Add(BlockType.Grass, 5);
-        inventory.Add(BlockType.Rock, 5);
-
+        LoadInventory();
         CreatePool();
     }
 
@@ -45,6 +45,44 @@ public class PlayerInventory : MonoBehaviour
             SetCurrentBlockType(BlockType.Rock);
         else if (Input.GetKeyDown(KeyCode.Keypad3) || Input.GetKeyDown(KeyCode.Alpha3))
             SetCurrentBlockType(BlockType.Snow);
+    }
+
+    private string GetInventoryPath()
+    {
+        var mainMenu = MainMenu_UI.Instance;
+        string folderPath = $"{mainMenu.SavesLocation}\\{mainMenu.CurrentFolder}/Inventory";
+        string fileName = "Inventory.json";
+        string fullPath = Path.Combine(folderPath, fileName);
+
+        if (!Directory.Exists(folderPath))
+            Directory.CreateDirectory(folderPath);
+
+        return fullPath;
+    }
+
+    public void SaveInventory()
+    {
+        string json = JsonConvert.SerializeObject(gameDataInventory, Formatting.Indented);
+        File.WriteAllText(GetInventoryPath(), json);
+    }
+
+    private void LoadInventory()
+    {
+        var path = GetInventoryPath();
+        string json = File.ReadAllText(path);
+        if (File.Exists(path))
+        {
+            gameDataInventory = JsonConvert.DeserializeObject<GameDataInventory>(json);
+            foreach (var item in gameDataInventory.Inventory)
+                Debug.Log($"{item.Key}: {item.Value}");
+        }
+        else
+        {
+            gameDataInventory = new GameDataInventory();
+            gameDataInventory.Inventory.Add(BlockType.Snow, 5);
+            gameDataInventory.Inventory.Add(BlockType.Grass, 5);
+            gameDataInventory.Inventory.Add(BlockType.Rock, 5);
+        }
     }
 
     private void SetCurrentBlockType(BlockType type)
@@ -71,7 +109,7 @@ public class PlayerInventory : MonoBehaviour
         foreach (var block in blockList)
         {
             BlockType blockType = block.GetBlockType();
-            if (inventory.ContainsKey(blockType))
+            if (gameDataInventory.Inventory.ContainsKey(blockType))
             {
                 inventoryElementPool.GetElement(out var element);
                 element.SetupInventoryElementUI(blockType);
@@ -85,7 +123,7 @@ public class PlayerInventory : MonoBehaviour
     {
         foreach (var element in activeInventoryElement)
             if (element.BlockType != BlockType.None)
-                element.UpdateCount(inventory[element.BlockType]);
+                element.UpdateCount(gameDataInventory.Inventory[element.BlockType]);
     }
 
     public BlockType GetCurrentBlockTypeToSpawn()
@@ -95,21 +133,21 @@ public class PlayerInventory : MonoBehaviour
 
     public Dictionary<BlockType, int> GetPlayerInventory()
     {
-        return inventory;
+        return gameDataInventory.Inventory;
     }
 
     public void UseInventory(BlockType type, bool remove = false)
     {
-        if (inventory.ContainsKey(type))
+        if (gameDataInventory.Inventory.ContainsKey(type))
         {
             if (remove)
             {
-                if (inventory[type] > 0)
-                    inventory[type]--;
+                if (gameDataInventory.Inventory[type] > 0)
+                    gameDataInventory.Inventory[type]--;
             }
             else
             {
-                inventory[type]++;
+                gameDataInventory.Inventory[type]++;
             }
         }
         else

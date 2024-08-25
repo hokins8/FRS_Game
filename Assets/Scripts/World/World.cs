@@ -254,12 +254,15 @@ public class World : MonoBehaviour
     private IEnumerator Save()
     {
         float process = 0;
-        foreach (var chunk in AllChunks)
+        foreach (var chunk in AllChunks.ToList())
         {
-            chunk.Value.Save();
-            process++;
-            loadingSlider.value = process / AllChunks.Count * 100;
-            yield return null;
+            if (chunk.Value != null)
+            {
+                chunk.Value.Save();
+                process++;
+                loadingSlider.value = process / AllChunks.Count * 100;
+                yield return null;
+            }
         }
         loadingSlider.value = 0;
     }
