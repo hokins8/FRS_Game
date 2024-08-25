@@ -69,9 +69,9 @@ public class PlayerInventory : MonoBehaviour
     private void LoadInventory()
     {
         var path = GetInventoryPath();
-        string json = File.ReadAllText(path);
         if (File.Exists(path))
         {
+            string json = File.ReadAllText(path);
             gameDataInventory = JsonConvert.DeserializeObject<GameDataInventory>(json);
             foreach (var item in gameDataInventory.Inventory)
                 Debug.Log($"{item.Key}: {item.Value}");
