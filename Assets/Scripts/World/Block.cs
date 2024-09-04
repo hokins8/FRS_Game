@@ -34,7 +34,7 @@ public class Block
         // Grass
         {new Vector2(0, 0.5f), new Vector2(0.0625f, 0.5f), new Vector2(0, 0.5625f), new Vector2(0.0625f, 0.5625f)},
         // Snow
-        {new Vector2(0.5f, 0.5f), new Vector2(0.5625f, 0.5f), new Vector2(0.5f, 5625f), new Vector2(0.5625f, 0.5625f)},
+        {new Vector2(0.5f, 0.5f), new Vector2(0.5625f, 0.5f), new Vector2(0.5f, 0.5625f), new Vector2(0.5625f, 0.5625f)},
         // Rock
         {new Vector2(0.25f, 0.5f), new Vector2(0.3125f, 0.5f), new Vector2(0.25f, 0.5625f), new Vector2(0.3125f, 0.5625f)},
         // Floor
